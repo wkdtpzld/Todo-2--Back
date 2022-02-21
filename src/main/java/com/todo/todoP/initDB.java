@@ -1,0 +1,50 @@
+package com.todo.todoP;
+
+import com.todo.todoP.Entity.Member;
+import com.todo.todoP.Entity.Member_Team_Parent;
+import com.todo.todoP.Entity.Team;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
+
+@Component
+@RequiredArgsConstructor
+public class initDB {
+
+    private final InitService initService;
+
+    @PostConstruct
+    public void init(){
+        initService.dbinit();
+    }
+
+    @Component
+    @Transactional
+    @RequiredArgsConstructor
+    static class InitService{
+
+        private final EntityManager em;
+
+        public void dbinit(){
+
+            for (int i=0 ; i<100; i++){
+                Member member = new Member("member" + i, "password" + i);
+                em.persist(member);
+
+                Team team = new Team("team"+i);
+                em.persist(team);
+
+                Member_Team_Parent join =
+                        Member_Team_Parent.joinMember(member,team,LocalDateTime.now());
+                em.persist(join);
+            }
+        }
+
+    }
+
+}
