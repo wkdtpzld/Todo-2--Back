@@ -20,7 +20,7 @@ public class initDB {
 
     @PostConstruct
     public void init(){
-        initService.dbinit();
+        initService.DBinit();
     }
 
     @Component
@@ -30,7 +30,7 @@ public class initDB {
 
         private final EntityManager em;
 
-        public void dbinit(){
+        public void DBinit(){
 
             for (int i=0 ; i<100; i++){
                 Member member = new Member("member" + i, "password" + i);

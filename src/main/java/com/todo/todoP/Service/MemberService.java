@@ -5,6 +5,9 @@ import com.todo.todoP.DTO.Basic.ResponseDTO;
 import com.todo.todoP.Entity.Member;
 import com.todo.todoP.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,15 +33,9 @@ public class MemberService {
         Optional<Member> original = memberRepository.findById(member.getId());
 
         original.ifPresent(m ->{
-            if (member.getName() != null){
-                m.setName(member.getName());
-            }
-            if (member.getEmail() != null){
-                m.setEmail(member.getEmail());
-            }
-            if (member.getPassword() != null){
-                m.setPassword(member.getPassword());
-            }
+            m.setName(member.getName());
+            m.setEmail(member.getEmail());
+            m.setPassword(member.getPassword());
 
             memberRepository.save(m);
         });
@@ -51,18 +48,42 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
+    public Slice<MemberDTO> GetMembersBySlice(Pageable pageable){
+        Slice<Member> all = memberRepository.findSliceAll(pageable);
+        return all.map(MemberDTO::new);
+    }
+
     @Transactional(readOnly = true)
-    public ResponseDTO<MemberDTO> findAll(){
+    public List<MemberDTO> GetOneMember(String name){
+        Member findMember = memberRepository.findMemberByName(name);
+        List<Member> member = List.of(findMember);
+        return member.stream().map(MemberDTO::new).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseDTO<MemberDTO> findAllNotPaging(){
         List<MemberDTO> members = findAllDTO();
         return ResponseDTO.<MemberDTO>builder().data(members).build();
     }
 
+    @Transactional(readOnly = true)
+    public Page<MemberDTO> findAll(Pageable pageable){
+        Page<Member> all = memberRepository.findAll(pageable);
+        return all.map(MemberDTO::new);
+    }
+
     //편의 메서드
+    @Transactional(readOnly = true)
     public List<MemberDTO> findAllDTO(){
         List<Member> allMembers = memberRepository.findAll();
         return allMembers.stream()
                 .map(MemberDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Member findByUserId(Long id){
+        return memberRepository.findMemberById(id);
     }
 
     //==증명 메서드==//
@@ -86,8 +107,8 @@ public class MemberService {
         }
     }
 
-    public Member getByCredentials(String email, String password, PasswordEncoder encoder){
-        Member entity = memberRepository.findMemberByEmail(email);
+    public Member getByCredentials(String name, String password, PasswordEncoder encoder){
+        Member entity = memberRepository.findMemberByName(name);
 
         if (entity != null && encoder.matches(password, entity.getPassword())){
             return entity;

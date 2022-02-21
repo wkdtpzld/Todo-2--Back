@@ -1,16 +1,14 @@
 package com.todo.todoP.api;
 
+import com.todo.todoP.DTO.Basic.ResponseDTO;
 import com.todo.todoP.DTO.Member.MemberCreateDTO;
 import com.todo.todoP.DTO.Member.MemberDTO;
-import com.todo.todoP.DTO.Basic.ResponseDTO;
-import com.todo.todoP.DTO.Team.TeamDTO;
+import com.todo.todoP.DTO.Member.MemberSignInDTO;
 import com.todo.todoP.Entity.Member;
 import com.todo.todoP.Security.TokenProvider;
 import com.todo.todoP.Service.MemberService;
-import com.todo.todoP.Service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -21,32 +19,15 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-public class TestApi {
+@RequestMapping("/auth")
+public class AuthorityApi {
 
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @GetMapping("/apiTemp/members")
-    public ResponseEntity<?> AllMembers(){
-        ResponseDTO<MemberDTO> response = memberService.findAll();
-        return ResponseEntity.ok().body(response);
-    }
-
-    @PutMapping("/apiTemp/member")
-    public ResponseEntity<?> updateMember(@RequestBody MemberCreateDTO memberDTO, @AuthenticationPrincipal Long userId){
-
-        Member entity = MemberCreateDTO.toEntity(memberDTO);
-        entity.setId(userId);
-        List<MemberDTO> dto = memberService.update(entity);
-        ResponseDTO.<MemberDTO>builder().data(dto).build();
-
-        return ResponseEntity.ok().body(dto);
-
-    }
-
-    @PostMapping("/api/signup")
+    @PostMapping("/signup")
     public ResponseEntity<?> createMember(@Valid @RequestBody MemberCreateDTO memberDTO){
         try {
             Member entity = MemberCreateDTO.toEntity(memberDTO);
@@ -67,9 +48,9 @@ public class TestApi {
     }
 
 
-    @PostMapping("/api/signin")
-    public ResponseEntity<?> authenticate(@RequestBody MemberDTO memberDTO){
-        Member member = memberService.getByCredentials(memberDTO.getEmail(), memberDTO.getPassword(), passwordEncoder);
+    @PostMapping("/signin")
+    public ResponseEntity<?> authenticate(@Valid @RequestBody MemberSignInDTO memberDTO){
+        Member member = memberService.getByCredentials(memberDTO.getName(), memberDTO.getPassword(), passwordEncoder);
 
         if (member != null){
 
@@ -89,7 +70,5 @@ public class TestApi {
             return ResponseEntity.badRequest().body(responseDTO);
         }
     }
-
-
 
 }
