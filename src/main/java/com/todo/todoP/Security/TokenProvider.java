@@ -22,7 +22,7 @@ public class TokenProvider {
         Date date = new Date();
         Calendar calendar = Calendar.getInstance();
 
-        int tokenExpire = 180000;
+        int tokenExpire = 1800000;
         calendar.add(Calendar.MILLISECOND, tokenExpire);
         Date expireDate = calendar.getTime();
 

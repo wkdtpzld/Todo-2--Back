@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-public class AuthorityApi {
+public class AuthorityAPI {
 
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
@@ -31,6 +31,7 @@ public class AuthorityApi {
     public ResponseEntity<?> createMember(@Valid @RequestBody MemberCreateDTO memberDTO){
         try {
             Member entity = MemberCreateDTO.toEntity(memberDTO);
+
             List<Member> member = memberService.save(entity);
 
             List<MemberDTO> dto = member.stream().map(MemberDTO::new)
@@ -57,7 +58,6 @@ public class AuthorityApi {
             String token = tokenProvider.create(member);
             MemberDTO responseMemberDTO = MemberDTO.builder()
                     .email(member.getEmail())
-                    .id(member.getId())
                     .token(token)
                     .name(member.getName())
                     .build();

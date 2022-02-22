@@ -1,5 +1,6 @@
 package com.todo.todoP.Entity;
 
+import com.todo.todoP.Entity.Basic.BasicUserEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Setter @Getter
-public class Member_Team_Parent extends BasicEntity{
+public class Member_Team_Parent extends BasicUserEntity {
 
     @Id @GeneratedValue
     @Column(name = "Parent_ID")

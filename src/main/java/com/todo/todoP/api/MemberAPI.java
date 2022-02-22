@@ -4,7 +4,6 @@ import com.todo.todoP.DTO.Member.MemberCreateDTO;
 import com.todo.todoP.DTO.Member.MemberDTO;
 import com.todo.todoP.DTO.Basic.ResponseDTO;
 import com.todo.todoP.Entity.Member;
-import com.todo.todoP.Repository.MemberRepository;
 import com.todo.todoP.Service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class MemberApi {
+public class MemberAPI {
 
     private final MemberService memberService;
 

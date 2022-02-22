@@ -15,16 +15,16 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
 
-    public void save(Team team){
+    public Team save(Team team){
         validation(team);
-        teamRepository.save(team);
+        return teamRepository.save(team);
     }
 
     public void delete(Team team){
         teamRepository.delete(team);
     }
 
-    public List<TeamDTO> findAll(){
+    public List<TeamDTO> findAllNotPaging(){
         List<Team> all = teamRepository.findAll();
         return all.stream()
                 .map(TeamDTO::new)
@@ -33,7 +33,7 @@ public class TeamService {
 
     //==증명 메서드==//
     private void validation(Team team){
-        if (teamRepository.findByTitle(team.getTitle()).isEmpty()){
+        if (!teamRepository.findByTitle(team.getTitle()).isEmpty()){
             throw new IllegalStateException("already exists");
         }
     }

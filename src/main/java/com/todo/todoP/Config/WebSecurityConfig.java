@@ -22,16 +22,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors()
                 .and()
                 .csrf()
-                .disable()
+                    .disable()
                 .httpBasic()
-                .disable()
+                    .disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                    .and()
                 .authorizeRequests()
-                .antMatchers("/","/auth/**").permitAll()
+                    .antMatchers("/","/auth/**").permitAll()
                 .anyRequest()
-                .authenticated();
+                    .authenticated();
 
         http.addFilterAfter(
                 filter,

@@ -1,6 +1,8 @@
 package com.todo.todoP.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.todo.todoP.Entity.Basic.BasicUserEntity;
+import com.todo.todoP.Entity.Embedded.Address;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +16,7 @@ import static javax.persistence.GenerationType.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Member extends BasicEntity{
+public class Member extends BasicUserEntity {
 
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "MEMBER_ID")
@@ -23,6 +25,9 @@ public class Member extends BasicEntity{
     private String name;
     private String email;
     private String password;
+
+    @Embedded
+    private Address address;
 
     @JsonIgnore
     @OneToMany(mappedBy = "member")
@@ -47,5 +52,12 @@ public class Member extends BasicEntity{
         this.name = name;
         this.password = password;
         this.email = email;
+    }
+
+    public Member(String name, String password, String email, Address address) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.address = address;
     }
 }

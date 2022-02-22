@@ -1,5 +1,6 @@
 package com.todo.todoP.DTO.Member;
 
+import com.todo.todoP.Entity.Embedded.Address;
 import com.todo.todoP.Entity.Member;
 import lombok.*;
 
@@ -13,20 +14,18 @@ import java.util.stream.Collectors;
 public class MemberDTO {
 
     private String token;
-    private Long id;
     private String name;
     private String email;
-    private String password;
     private List<TeamsDTO> team;
+    private Address address;
 
     public MemberDTO(Member member){
-        id = member.getId();
         name = member.getName();
         email = member.getEmail();
-        password = member.getPassword();
         team = member.getParent().stream()
                 .map(TeamsDTO::new)
                 .collect(Collectors.toList());
+        address = member.getAddress();
     }
 
 }
