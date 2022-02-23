@@ -3,6 +3,9 @@ package com.todo.todoP.Service;
 import com.todo.todoP.DTO.Member.MemberDTO;
 import com.todo.todoP.DTO.Basic.ResponseDTO;
 import com.todo.todoP.Entity.Member;
+import com.todo.todoP.Entity.Member_Team_Parent;
+import com.todo.todoP.Entity.Team;
+import com.todo.todoP.Repository.MemberParentRepository;
 import com.todo.todoP.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +24,8 @@ import java.util.stream.Collectors;
 @Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final MemberParentRepository parentRepository;
+
 
     public List<Member> save(Member member){
         existsMember(member);
@@ -32,12 +37,11 @@ public class MemberService {
         validation(member);
         Optional<Member> original = memberRepository.findById(member.getId());
 
+        // 동적 쿼리로 해야하나?
         original.ifPresent(m ->{
             m.setName(member.getName());
             m.setEmail(member.getEmail());
             m.setPassword(member.getPassword());
-
-            memberRepository.save(m);
         });
 
         return original.stream().map(MemberDTO::new).collect(Collectors.toList());
@@ -48,6 +52,24 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
+    public void JoinTeam(Member member, Team team){
+        Member_Team_Parent parent = Member_Team_Parent.joinMember(member, team);
+
+        if (parentRepository.existsByTeamAndMember(team,member)){
+            throw new IllegalStateException("already exist");
+        }
+        parentRepository.save(parent);
+    }
+
+    public void DeleteTeamMember(Member member, Team team){
+
+        if (parentRepository.existsByTeamAndMember(team,member)){
+            Member_Team_Parent target = parentRepository.findByTeamAndMember(team, member);
+            parentRepository.delete(target);
+        }
+    }
+
+    @Transactional(readOnly = true)
     public Slice<MemberDTO> GetMembersBySlice(Pageable pageable){
         Slice<Member> all = memberRepository.findSliceAll(pageable);
         return all.map(MemberDTO::new);

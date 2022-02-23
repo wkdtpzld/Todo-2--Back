@@ -50,10 +50,23 @@ public class TeamAPI {
         }
     }
 
-    @PutMapping("/auth/team")
-    public ResponseEntity<?> UpdateTeam(@Valid @RequestBody TeamCreateDTO createDTO, @AuthenticationPrincipal Long userID){
-
-
-        return ResponseEntity.ok("2");
+    @PutMapping("/team/{title}")
+    public ResponseEntity<?> UpdateTeam(@Valid @RequestBody TeamCreateDTO createDTO,
+                                        @AuthenticationPrincipal Long userID,
+                                        @PathVariable String title){
+        try {
+            Team team = teamService.FindByTitle(title);
+            if (userID == Long.parseLong(team.getCreator())){
+                List<TeamDTO> update = teamService.update(team, createDTO);
+                ResponseDTO<TeamDTO> response = ResponseDTO.<TeamDTO>builder().data(update).build();
+                return ResponseEntity.ok().body(response);
+            } else {
+                return ResponseEntity.badRequest().body("It doesn't match the creator.");
+            }
+        } catch (Exception e){
+            String error = e.getMessage();
+            ResponseDTO<TeamDTO> response = ResponseDTO.<TeamDTO>builder().etc(error).build();
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 }

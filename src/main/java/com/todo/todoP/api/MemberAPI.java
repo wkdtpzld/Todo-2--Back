@@ -4,7 +4,9 @@ import com.todo.todoP.DTO.Member.MemberCreateDTO;
 import com.todo.todoP.DTO.Member.MemberDTO;
 import com.todo.todoP.DTO.Basic.ResponseDTO;
 import com.todo.todoP.Entity.Member;
+import com.todo.todoP.Entity.Team;
 import com.todo.todoP.Service.MemberService;
+import com.todo.todoP.Service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import java.util.List;
 public class MemberAPI {
 
     private final MemberService memberService;
+    private final TeamService teamService;
 
     @GetMapping("/member/{name}")
     public ResponseEntity<?> OneMember(@PathVariable String name){
@@ -73,6 +76,45 @@ public class MemberAPI {
     public ResponseEntity<?> AllMembers(){
         ResponseDTO<MemberDTO> response = memberService.findAllNotPaging();
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/member/team/{id}")
+    public ResponseEntity<?> JoinTeam(@AuthenticationPrincipal Long userId,@PathVariable Long id){
+        try {
+
+            Member member = memberService.findByUserId(userId);
+            Team team = teamService.FindById(id);
+            memberService.JoinTeam(member,team);
+            ResponseDTO<Object> response = ResponseDTO.builder().etc("Member Join Team").build();
+
+            return ResponseEntity.ok().body(response);
+
+        } catch (Exception e){
+            String error = e.getMessage();
+            ResponseDTO<Object> response = ResponseDTO.builder().etc(error).build();
+
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @DeleteMapping("/member/team/{id}")
+    public ResponseEntity<?> deleteTeamMember(@AuthenticationPrincipal Long userId, @PathVariable Long id){
+        try {
+            Member member = memberService.findByUserId(userId);
+            Team team = teamService.FindById(id);
+            memberService.DeleteTeamMember(member,team);
+            ResponseDTO<Object> response = ResponseDTO.builder().etc("Member Delete Success").build();
+
+            return ResponseEntity.ok().body(response);
+
+        } catch (Exception e) {
+            String error = e.getMessage();
+            ResponseDTO<Object> response = ResponseDTO.builder().etc(error).build();
+
+            return ResponseEntity.badRequest().body(response);
+        }
+
+
     }
 
 

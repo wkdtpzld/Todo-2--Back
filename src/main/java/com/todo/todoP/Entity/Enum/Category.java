@@ -8,5 +8,4 @@ public enum Category {
     SILVER,
     GOLD;
 
-    private String type;
 }

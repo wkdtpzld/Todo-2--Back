@@ -40,7 +40,7 @@ public class initDB {
                 em.persist(team);
 
                 Member_Team_Parent join =
-                        Member_Team_Parent.joinMember(member,team,LocalDateTime.now());
+                        Member_Team_Parent.joinMember(member,team);
                 em.persist(join);
             }
         }
