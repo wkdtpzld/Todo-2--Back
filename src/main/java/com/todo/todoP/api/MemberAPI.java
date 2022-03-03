@@ -3,15 +3,19 @@ package com.todo.todoP.api;
 import com.todo.todoP.DTO.Member.MemberCreateDTO;
 import com.todo.todoP.DTO.Member.MemberDTO;
 import com.todo.todoP.DTO.Basic.ResponseDTO;
+import com.todo.todoP.DTO.Member.MemberSearchCondition;
 import com.todo.todoP.Entity.Member;
 import com.todo.todoP.Entity.Team;
+import com.todo.todoP.Repository.MemberRepository;
 import com.todo.todoP.Service.MemberService;
 import com.todo.todoP.Service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +30,8 @@ public class MemberAPI {
 
     private final MemberService memberService;
     private final TeamService teamService;
+    private final MemberRepository memberRepository;
+
 
     @GetMapping("/member/{name}")
     public ResponseEntity<?> OneMember(@PathVariable String name){
@@ -67,7 +73,7 @@ public class MemberAPI {
         return memberService.findAll(pageable);
     }
 
-    @GetMapping("/slice/members")
+    @GetMapping("auth/slice/members")
     public Slice<MemberDTO> list2(@PageableDefault(size = 10) Pageable pageable){
         return memberService.GetMembersBySlice(pageable);
     }
@@ -113,10 +119,21 @@ public class MemberAPI {
 
             return ResponseEntity.badRequest().body(response);
         }
-
-
     }
 
+    @GetMapping("auth/v3/member")
+    public ResponseEntity<?> pagingQuerydsl2(@PageableDefault(size = 10, sort = "name", direction = Sort.Direction.DESC) Pageable pageable,
+                                            MemberSearchCondition condition){
+        Page<MemberDTO> simplePage = memberService.findAllQuerydsl(pageable,condition);
 
+        return ResponseEntity.ok().body(simplePage);
+    }
+
+    @GetMapping("auth/v4/member")
+    public ResponseEntity<?> SliceQuerydsl(@PageableDefault(size = 10, sort = "name") Pageable pageable, MemberSearchCondition condition){
+        Slice<MemberDTO> result = memberRepository.findAllSliceSort(pageable, condition);
+
+        return ResponseEntity.ok().body(result);
+    }
 
 }

@@ -32,11 +32,11 @@ public class initDB {
 
         public void DBinit(){
 
-            for (int i=0 ; i<100; i++){
+            for (int i=0 ; i<1000; i++){
                 Member member = new Member("member" + i, "password" + i);
                 em.persist(member);
 
-                Team team = new Team("team"+i);
+                Team team = new Team("team"+(1000-i));
                 em.persist(team);
 
                 Member_Team_Parent join =

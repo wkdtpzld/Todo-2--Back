@@ -22,7 +22,7 @@ public class TeamAPI {
 
     private final TeamService teamService;
 
-    @GetMapping("/auth/teams")
+    @GetMapping("/teams")
     public ResponseEntity<?> TeamList(){
         List<TeamDTO> all = teamService.findAllNotPaging();
         ResponseDTO<TeamDTO> response = ResponseDTO.<TeamDTO>builder().data(all).build();

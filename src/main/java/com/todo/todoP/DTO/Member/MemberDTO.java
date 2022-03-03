@@ -1,5 +1,6 @@
 package com.todo.todoP.DTO.Member;
 
+import com.querydsl.core.annotations.QueryProjection;
 import com.todo.todoP.Entity.Embedded.Address;
 import com.todo.todoP.Entity.Member;
 import lombok.*;
@@ -19,6 +20,7 @@ public class MemberDTO {
     private List<TeamsDTO> team;
     private Address address;
 
+    @QueryProjection
     public MemberDTO(Member member){
         name = member.getName();
         email = member.getEmail();

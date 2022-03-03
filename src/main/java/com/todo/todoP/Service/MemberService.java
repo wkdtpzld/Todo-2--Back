@@ -2,6 +2,7 @@ package com.todo.todoP.Service;
 
 import com.todo.todoP.DTO.Member.MemberDTO;
 import com.todo.todoP.DTO.Basic.ResponseDTO;
+import com.todo.todoP.DTO.Member.MemberSearchCondition;
 import com.todo.todoP.Entity.Member;
 import com.todo.todoP.Entity.Member_Team_Parent;
 import com.todo.todoP.Entity.Team;
@@ -92,6 +93,11 @@ public class MemberService {
     public Page<MemberDTO> findAll(Pageable pageable){
         Page<Member> all = memberRepository.findAll(pageable);
         return all.map(MemberDTO::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<MemberDTO> findAllQuerydsl(Pageable pageable, MemberSearchCondition condition){
+        return memberRepository.findAllPageSort(pageable,condition);
     }
 
     //편의 메서드
